@@ -1,0 +1,3 @@
+# ???WebMvcConfigurer???
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.example.commonutils.config.RoleCheckAutoConfiguration

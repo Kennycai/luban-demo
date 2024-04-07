@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>Product Home</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #productList {
+            list-style-type: none;
+            padding: 0;
+        }
+        #productList li {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        #productList li span {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="flex justify-between items-center">
+    <h1>Product Home</h1>
+    <button id="logoutButton">Logout</button>
+</div>
+<ul id="productList"></ul>
+<script>
+    $(document).ready(function() {
+        var token = localStorage.getItem('token'); // 从localStorage中获取token
+        $.ajax({
+            url: "/product/list",
+            type: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + token // 设置请求头
+            },
+            success: function(response) {
+                var products = response.data;
+                for (var i = 0; i < products.length; i++) {
+                    var product = products[i];
+                    var productElement = "<li>" +
+                        "<span>id: " + product.id + "</span>" +
+                        "<span>name: " + product.name + "</span>" +
+                        "</li>";
+                    $("#productList").append(productElement);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('token');
+        window.location.href = "/login";
+    });
+</script>
+</body>
+</html>

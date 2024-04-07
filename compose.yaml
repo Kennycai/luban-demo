@@ -1,0 +1,78 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=luban'
+      - 'MYSQL_PASSWORD=123456'
+      - 'MYSQL_ROOT_PASSWORD=654321'
+      - 'MYSQL_USER=admin'
+    ports:
+      - '3306:3306'
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379'
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+  ldap:
+    image: 'osixia/openldap'
+    ports:
+      - "389:389"
+    environment:
+      LDAP_ORGANISATION: "luban"
+      LDAP_DOMAIN: "example.com"
+      LDAP_BASE_DN: "ou=people,dc=example,dc=com"
+      LDAP_ADMIN_PASSWORD: "654321"
+  eureka:
+    build:
+      context: .
+      dockerfile: ./eureka/Dockerfile
+    ports:
+      - "7573"
+    depends_on:
+      - mysql
+      - ldap
+  product:
+    build:
+      context: .
+      dockerfile: ./product/Dockerfile
+    ports:
+      - "7570"
+    depends_on:
+      - mysql
+      - rabbitmq
+  configure:
+    build:
+      context: .
+      dockerfile: ./product/Dockerfile
+    ports:
+      - "7570"
+    depends_on:
+      - mysql
+      - rabbitmq
+  uaa:
+    build:
+      context: .
+      dockerfile: ./product/Dockerfile
+    ports:
+      - "7570"
+    depends_on:
+      - mysql
+      - rabbitmq
+  gateway:
+    build:
+      context: .
+      dockerfile: ./product/Dockerfile
+    ports:
+      - "7570"
+    depends_on:
+      - mysql
+      - rabbitmq
+
+

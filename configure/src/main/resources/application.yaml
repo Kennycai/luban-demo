@@ -1,0 +1,43 @@
+server:
+  port: 7569
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
+    prefer-ip-address: true
+spring:
+  application:
+    name: configure-service
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Kennycai/luban-config.git
+#          search-paths: sub-folder-if-any
+#          username: your-username
+#          password: your-password
+    bus:
+      enabled: true
+      trace:
+        enabled: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          bus: trace

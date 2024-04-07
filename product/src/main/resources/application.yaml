@@ -1,0 +1,50 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    lease-expiration-duration-in-seconds: 30
+    lease-renewal-interval-in-seconds: 10
+    prefer-ip-address: true
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: "jdbc:mysql://localhost:3306/luban"
+    username: admin
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  config:
+    import: optional:configserver:http://localhost:7569/
+  cloud:
+    config:
+      uri: http://localhost:7569
+    bus:
+      enabled: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+server:
+  port: 7570
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh, refresh
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          bus: trace

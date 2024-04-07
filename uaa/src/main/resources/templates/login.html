@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="loginForm">
+    <input type="hidden" id="token" name="token" th:value="${token}">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+
+    <label for="authType">Authentication Type:</label>
+    <select id="authType" name="authType">
+        <option value="FORM">Password</option>
+        <option value="LDAP">LDAP</option>
+    </select>
+
+    <input type="submit" value="Login" onclick="submitForm()">
+
+    <h2 class="form-signin-heading">Login with OAuth 2.0</h2>
+    <table>
+        <tr>
+            <td>
+                <a th:href="${githubLoginUrl}">Login
+                    with GitHub</a></td>
+        </tr>
+    </table>
+</div>
+<script>
+    var token;
+    $(document).ready(function() {
+        token = $("#token").val();
+        if (token != null) {
+            localStorage.setItem('token', token);
+        }
+        if (localStorage.getItem('token') != null && localStorage.getItem('token') !== "") {
+            window.location.href = "/product/home";
+        }
+    });
+    function submitForm() {
+        // 获取用户名和密码
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var authType = $("#authType").val();
+
+        // 发送POST请求
+        $.ajax({
+            url: "/login",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({username: username, password: password, type: authType}),
+            success: function (response) {
+                // 将token存储在localStorage中
+                if (response['data'] != null) {
+                    token = response['data'];
+                    localStorage.setItem('token', token);
+                    window.location.href = "/product/home";
+                } else {
+                    // 处理错误 弹窗
+                    alert(response['message']);
+                }
+            },
+            error: function (xhr, status, error, response) {
+                // 处理错误
+                alert(response['message']);
+            }
+        })
+    }
+</script>
+</body>
+</html>
